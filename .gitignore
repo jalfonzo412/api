@@ -1,0 +1,7 @@
+node_modules
+build/*.js
+dist
+dist/*.js
+dist/*.js.map
+.env
+.vscode
