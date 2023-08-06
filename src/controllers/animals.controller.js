@@ -16,8 +16,8 @@ export const getAnimal = async (req, res) => {
 } 
 
 export const createAnimal = async (req, res) => {
-  const {grupo, especie, raza, anios, peso_aprox, descripcion, url_img} = req.body
-  const [rows] = await pool.query('INSERT INTO animales (grupo, especie, raza, anios, peso_aprox, descripcion, url_img) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+  const {grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad} = req.body
+  const [rows] = await pool.query('INSERT INTO animales (grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
   [grupo, especie, raza, anios, peso_aprox, descripcion, url_img])
   res.send({ 
     id: rows.insertId,
@@ -27,10 +27,19 @@ export const createAnimal = async (req, res) => {
     anios, 
     peso_aprox, 
     descripcion,
-    url_img
+    url_img, 
+    cantidad
   })
 }
 
 export const updateAnimal = (req, res) => res.send('actualizando registro del animal')
 
-export const deleteAnimal = (req, res) => res.send('eliminando registro del animal')
+export const deleteAnimal = async (req, res) => {
+  const result = await pool.query('DELETE * FROM animales WHERE id = ?', [req.params.id])
+  
+  if (result.affectedRows <= 0) return res.status(404).json({
+    message: 'Animal not found'
+  })
+
+  res.sendStatus(204)
+} 

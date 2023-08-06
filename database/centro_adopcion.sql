@@ -65,3 +65,8 @@ alter table animales
 change descricpion descripcion text; 
 
 select * from animales;
+
+delete from animales where id = 6;
+
+ALTER TABLE animales 
+	ADD cantidad INT;

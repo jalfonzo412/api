@@ -11,6 +11,6 @@ router.post('/animals', createAnimal);
 
 router.put('/animals', updateAnimal);
 
-router.delete('/animals', deleteAnimal);
+router.delete('/animals/:id', deleteAnimal);
 
 export default router
