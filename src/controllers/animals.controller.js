@@ -38,7 +38,7 @@ export const updateAnimal = async (req, res) => {
   const { id } = req.params
   const { grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad } = req.body
   const [result] = await pool.query(
-    'UPDATE animales SET grupo = ?, especie = ?, raza = ?, anios = ?, peso_aprox = ?, descripcion = ?, url_img = ?, cantidad = ? WHERE id = ?', 
+    'UPDATE animales SET grupo = IFNULL(?, grupo), especie = IFNULL(?, especie), raza = IFNULL(?, raza), anios = IFNULL(?, anios), peso_aprox = IFNULL(?, peso_aprox), descripcion = IFNULL(?, descripcion), url_img = IFNULL(?, url_img), cantidad = IFNULL(?, cantidad) WHERE id = ?', 
     [grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad, id]
   )
 
@@ -58,7 +58,7 @@ export const updateAnimal = async (req, res) => {
 
 export const deleteAnimal = async (req, res) => {
   const result = await pool.query(
-    'DELETE * FROM animales WHERE id = ?', 
+    'DELETE * FROM animales WHERE id = ? AND cantidad <= 0', 
     [req.params.id]
   )
   
