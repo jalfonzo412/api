@@ -69,4 +69,11 @@ select * from animales;
 delete from animales where id = 6;
 
 ALTER TABLE animales 
-	ADD cantidad INT;
+ADD cantidad INT;
+
+UPDATE animales
+SET cantidad = 9
+where id = 7;
+
+ALTER TABLE animales 
+change updated updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP; 

@@ -16,9 +16,11 @@ export const getAnimal = async (req, res) => {
 } 
 
 export const createAnimal = async (req, res) => {
-  const {grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad} = req.body
-  const [rows] = await pool.query('INSERT INTO animales (grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
-  [grupo, especie, raza, anios, peso_aprox, descripcion, url_img])
+  const { grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad } = req.body
+  const [rows] = await pool.query(
+    'INSERT INTO animales (grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
+    [grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad]
+  )
   res.send({ 
     id: rows.insertId,
     grupo, 
@@ -32,14 +34,39 @@ export const createAnimal = async (req, res) => {
   })
 }
 
-export const updateAnimal = (req, res) => res.send('actualizando registro del animal')
+export const updateAnimal = async (req, res) => {
+  const { id } = req.params
+  const { grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad } = req.body
+  const [result] = await pool.query(
+    'UPDATE animales SET grupo = ?, especie = ?, raza = ?, anios = ?, peso_aprox = ?, descripcion = ?, url_img = ?, cantidad = ? WHERE id = ?', 
+    [grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad, id]
+  )
+
+  if (result.affectedRows === 0) {
+    return res.status(404).json({
+      message: 'Animal not found'
+    })
+  }
+
+  const [rows] = await pool.query(
+    'SELECT * FROM animales WHERE id = ?', 
+    [req.params.id]
+  )
+
+  res.json(rows[0])
+}
 
 export const deleteAnimal = async (req, res) => {
-  const result = await pool.query('DELETE * FROM animales WHERE id = ?', [req.params.id])
+  const result = await pool.query(
+    'DELETE * FROM animales WHERE id = ?', 
+    [req.params.id]
+  )
   
-  if (result.affectedRows <= 0) return res.status(404).json({
-    message: 'Animal not found'
-  })
-
+  if (result.affectedRows <= 0){ 
+    return res.status(404).json({
+      message: 'Animal not found'
+    })
+  }
+  
   res.sendStatus(204)
 } 
