@@ -1,6 +1,9 @@
 import { pool } from '../db.js';
 
-export const getAnimals = (req, res) => res.send('obteniendo animales')
+export const getAnimals = async (req, res) => {
+  const [rows] = await pool.query('SELECT * FROM animales')
+  res.json(rows)
+}
 
 export const createAnimals = async (req, res) => {
   const {grupo, especie, raza, anios, peso_aprox, descripcion, url_img} = req.body
