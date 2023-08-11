@@ -1,11 +1,11 @@
 import { Router } from 'express'
-import { getAnimals, createAnimal, updateAnimal, deleteAnimal } from '../controllers/animals.controller.js'
+import { getAnimals, getAnimal, createAnimal, updateAnimal, deleteAnimal } from '../controllers/animals.controller.js'
 
 const router = Router()
 
 router.get('/animals', getAnimals);
 
-router.get('/animals/:id', getAnimals);
+router.get('/animals/:id', getAnimal);
 
 router.post('/animals', createAnimal);
 

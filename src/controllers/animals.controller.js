@@ -13,17 +13,13 @@ export const getAnimals = async (req, res) => {
 }
 
 export const getAnimal = async (req, res) => {
-  try {
     const [rows] = await pool.query('SELECT * FROM animales WHERE id = ?', [req.params.id])
+    
     if (rows.length <= 0) return res.status(404).json({
       message: 'Animal not found'
     })
-    res.status(200).json(rows[0]) 
-  } catch (error) {
-    return res.status(500).json({
-      message: 'Something goes wrong'
-    })
-  }
+    
+    res.status(200).json(rows[0])
 } 
 
 export const createAnimal = async (req, res) => {
@@ -80,20 +76,14 @@ export const updateAnimal = async (req, res) => {
 }
 
 export const deleteAnimal = async (req, res) => {
-  try {
-    const result = await pool.query(
-      'DELETE * FROM animales WHERE id = ? AND cantidad <= 0', 
-      [req.params.id]
-    )
-    if (result.affectedRows <= 0){ 
-      return res.status(404).json({
-        message: 'Animal not found'
-      })
-    }
-    res.sendStatus(204)
-  } catch (error) {
-    return res.status(500).json({
-      message: 'Something goes wrong'
+  const result = await pool.query(
+    'DELETE FROM animales WHERE id = ? OR cantidad <= 0', 
+    [req.params.id]
+  )
+  if (result.affectedRows <= 0){ 
+    return res.status(404).json({
+      message: 'Animal not found'
     })
   }
+  res.sendStatus(204)
 } 
