@@ -1,40 +1,36 @@
 import { pool } from '../db.js';
+import * as AnimalsServices from '../services/animals.service.js';
 
-export const getAnimals = async (req, res) => {
-  try {
-    const [rows] = await pool.query('SELECT * FROM animales')  
-    res.status(200).json(rows)
-  } catch (error) {
-    return res.status(500).json({
-      message: 'Something goes wrong'
-    })
+class AnimalsController {
+  static getAllAnimals = async (req, res) => {
+    const animals = await AnimalsServices.getAllAnimals()  
+    res.status(200).json(animals)
   }
-}
 
-export const getAnimal = async (req, res) => {
+  static getAnimalById = async (req, res) => {
     const { id } = req.params
   
-    const [rows] = await pool.query('SELECT * FROM animales WHERE id = ?', id)
+    const animal = await AnimalsServices.getAnimalById(id)
     
-    if (rows.length <= 0) return res.status(404).json({
+    if (animal.length <= 0) return res.status(404).json({
       message: 'Animal not found'
     })
     
-    res.status(200).json(rows[0])
-} 
+    res.status(200).json(animal)
+  }
 
-export const createAnimal = async (req, res) => {
-  try {
+  static createAnimal = async (req, res) => {
     const { grupo, especie, raza, anios, peso_aprox, cantidad, valor_x_unidad } = req.body
     
     if (grupo === undefined || especie === undefined) return res.status(400).json({
       message: 'Bad Request. Please fill this field.'
     })
 
-    const animal = { grupo, especie, raza, anios, peso_aprox, cantidad, valor_x_unidad }
-    const [rows] = await pool.query('INSERT INTO animales SET ?', animal)
+    const obj_animal = { grupo, especie, raza, anios, peso_aprox, cantidad, valor_x_unidad }
+    const newAnimal = await AnimalsServices.createAnimal(obj_animal)
+    
     res.status(201).send({ 
-      id: rows.insertId,
+      id: newAnimal.insertId,
       grupo, 
       especie, 
       raza, 
@@ -43,48 +39,35 @@ export const createAnimal = async (req, res) => {
       cantidad,
       valor_x_unidad
     })
-  } catch (error) {
-    return res.status(500).json({
-      message: 'Something goes wrong'
-    })
   }
-}
 
-export const updateAnimal = async (req, res) => {
-  try {
+  static updateAnimal = async (req, res) => {
     const { id } = req.params
     const { grupo, especie, raza, anios, peso_aprox, cantidad, valor_x_unidad } = req.body
 
-    const [result] = await pool.query(
-      'UPDATE animales SET grupo = IFNULL(?, grupo), especie = IFNULL(?, especie), raza = IFNULL(?, raza), anios = IFNULL(?, anios), peso_aprox = IFNULL(?, peso_aprox), cantidad = IFNULL(?, cantidad), valor_x_unidad = IFNULL(?, valor_x_unidad) WHERE id = ?', 
-      [grupo, especie, raza, anios, peso_aprox, cantidad, valor_x_unidad, id]
-    )
+    const obj_animal = { grupo, especie, raza, anios, peso_aprox, cantidad, valor_x_unidad }
+    const affectedRows = await AnimalsServices.updateAnimal(obj_animal, id)
 
-    if (result.affectedRows === 0) {
+    if (affectedRows === 0) {
       return res.status(404).json({
         message: 'Animal not found'
       })
     }
 
-    const [rows] = await pool.query('SELECT * FROM animales WHERE id = ?', id)
-    res.status(200).json(rows[0])
-  } catch (error) {
-    return res.status(500).json({
-      message: 'Something goes wrong'
-    })
+    const [record] = await pool.query('SELECT * FROM animales WHERE id = ?', id)
+    res.status(200).json(record[0])
+  }
+
+  static deleteAnimal = async (req, res) => {
+    const { id } = req.params
+    const affectedRows = await AnimalsServices.deleteAnimal(id)
+    if (affectedRows === 0){ 
+      return res.status(404).json({
+        message: 'Animal not found'
+      })
+    }
+    res.sendStatus(204)
   }
 }
 
-export const deleteAnimal = async (req, res) => {
-  const { id } = req.params
-  const result = await pool.query(
-    'DELETE FROM animales WHERE id = ? OR cantidad <= 0', 
-    id
-  )
-  if (result.affectedRows <= 0){ 
-    return res.status(404).json({
-      message: 'Animal not found'
-    })
-  }
-  res.sendStatus(204)
-} 
+export default AnimalsController
