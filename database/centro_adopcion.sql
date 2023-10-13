@@ -76,4 +76,12 @@ SET cantidad = 9
 where id = 7;
 
 ALTER TABLE animales 
-change updated updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP; 
+change updated updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+alter table animales
+drop descripcion, drop url_img;
+
+ALTER TABLE animales 
+ADD valor_x_unidad double;
+
+select * from animales;

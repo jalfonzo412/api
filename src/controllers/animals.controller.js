@@ -1,99 +1,73 @@
-/* eslint-disable consistent-return */
 import { pool } from '../db.js';
+import * as AnimalsServices from '../services/animals.service.js';
 
-export const getAnimals = async (req, res) => {
-  try {
-    const [rows] = await pool.query('SELECT * FROM animales')  
-    res.status(200).json(rows)
-  } catch (error) {
-    return res.status(500).json({
-      message: 'Something goes wrong'
-    })
+class AnimalsController {
+  static getAllAnimals = async (req, res) => {
+    const animals = await AnimalsServices.getAllAnimals()  
+    res.status(200).json(animals)
   }
-}
 
-export const getAnimal = async (req, res) => {
-  try {
-    const [rows] = await pool.query('SELECT * FROM animales WHERE id = ?', [req.params.id])
-    if (rows.length <= 0) return res.status(404).json({
+  static getAnimalById = async (req, res) => {
+    const { id } = req.params
+  
+    const animal = await AnimalsServices.getAnimalById(id)
+    
+    if (animal.length <= 0) return res.status(404).json({
       message: 'Animal not found'
     })
-    res.status(200).json(rows[0]) 
-  } catch (error) {
-    return res.status(500).json({
-      message: 'Something goes wrong'
-    })
+    
+    res.status(200).json(animal)
   }
-} 
 
-export const createAnimal = async (req, res) => {
-  try {
-    const { grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad } = req.body
-    const [rows] = await pool.query(
-      'INSERT INTO animales (grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
-      [grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad]
-    )
+  static createAnimal = async (req, res) => {
+    const { grupo, especie, raza, anios, peso_aprox, cantidad, valor_x_unidad } = req.body
+    
+    if (grupo === undefined || especie === undefined) return res.status(400).json({
+      message: 'Bad Request. Please fill this field.'
+    })
+
+    const obj_animal = { grupo, especie, raza, anios, peso_aprox, cantidad, valor_x_unidad }
+    const newAnimal = await AnimalsServices.createAnimal(obj_animal)
+    
     res.status(201).send({ 
-      id: rows.insertId,
+      id: newAnimal.insertId,
       grupo, 
       especie, 
       raza, 
       anios, 
-      peso_aprox, 
-      descripcion,
-      url_img, 
-      cantidad
-    })
-  } catch (error) {
-    return res.status(500).json({
-      message: 'Something goes wrong'
+      peso_aprox,
+      cantidad,
+      valor_x_unidad
     })
   }
-}
 
-export const updateAnimal = async (req, res) => {
-  try {
+  static updateAnimal = async (req, res) => {
     const { id } = req.params
-    const { grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad } = req.body
-    const [result] = await pool.query(
-      'UPDATE animales SET grupo = IFNULL(?, grupo), especie = IFNULL(?, especie), raza = IFNULL(?, raza), anios = IFNULL(?, anios), peso_aprox = IFNULL(?, peso_aprox), descripcion = IFNULL(?, descripcion), url_img = IFNULL(?, url_img), cantidad = IFNULL(?, cantidad) WHERE id = ?', 
-      [grupo, especie, raza, anios, peso_aprox, descripcion, url_img, cantidad, id]
-    )
+    const { grupo, especie, raza, anios, peso_aprox, cantidad, valor_x_unidad } = req.body
 
-    if (result.affectedRows === 0) {
+    const obj_animal = { grupo, especie, raza, anios, peso_aprox, cantidad, valor_x_unidad }
+    const affectedRows = await AnimalsServices.updateAnimal(obj_animal, id)
+
+    if (affectedRows === 0) {
       return res.status(404).json({
         message: 'Animal not found'
       })
     }
 
-    const [rows] = await pool.query(
-      'SELECT * FROM animales WHERE id = ?', 
-      [req.params.id]
-    )
-
-    res.status(200).json(rows[0])
-  } catch (error) {
-    return res.status(500).json({
-      message: 'Something goes wrong'
-    })
+    const [record] = await pool.query('SELECT * FROM animales WHERE id = ?', id)
+    res.status(200).json(record[0])
   }
-}
 
-export const deleteAnimal = async (req, res) => {
-  try {
-    const result = await pool.query(
-      'DELETE * FROM animales WHERE id = ? AND cantidad <= 0', 
-      [req.params.id]
-    )
-    if (result.affectedRows <= 0){ 
+  static deleteAnimal = async (req, res) => {
+    const { id } = req.params
+    const affectedRows = await AnimalsServices.deleteAnimal(id)
+    if (affectedRows === 0){ 
       return res.status(404).json({
         message: 'Animal not found'
       })
     }
     res.sendStatus(204)
-  } catch (error) {
-    return res.status(500).json({
-      message: 'Something goes wrong'
-    })
   }
-} 
+}
+
+export default AnimalsController
