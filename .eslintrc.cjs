@@ -31,7 +31,6 @@ module.exports = {
     quotes: 'off',
     'no-restricted-syntax': 'off',
     'import/prefer-default-export': 'off',
-    'import/extensions': 'off',
-    'consistent-return': 'off'
+    'import/extensions': 'off'
   },
 };

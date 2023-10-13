@@ -5,13 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "serve": "node dist/index.js",
-    "build": "babel src -d dist",
-    "dev": "nodemon --exec babel-node src/index.js",
-    "start": "babel-node src/index.js",
-    "start:debug": "babel-node --inspect src/index.js",
-    "eslint": "npx eslint src/**/*.js --ignore-pattern \"node_modules/\"",
-    "eslint:fix": "npx eslint src/**/*.js --fix --ignore-pattern \"node_modules/\""
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "lint": "eslint src/"
   },
   "keywords": [],
   "author": "",
@@ -25,15 +21,9 @@
     "express-fileupload": "^1.4.0",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
-    "mysql2": "^3.6.0",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.0"
+    "mysql2": "^3.6.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.0",
-    "@babel/core": "^7.23.0",
-    "@babel/node": "^7.22.19",
-    "@babel/preset-env": "^7.22.20",
     "eslint": "^8.46.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.0.0",
