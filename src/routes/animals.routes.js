@@ -1,7 +1,7 @@
-import { Router } from 'express'
-import AnimalsController from '../controllers/animals.controller.js'
+import { Router } from 'express';
+import AnimalsController from '../controllers/animals.controller.js';
 
-const router = Router()
+const router = Router();
 
 /**
  * @swagger
@@ -166,4 +166,4 @@ router.patch('/animals/:id', AnimalsController.updateAnimal);
  */
 router.delete('/animals/:id', AnimalsController.deleteAnimal);
 
-export default router
+export default router;

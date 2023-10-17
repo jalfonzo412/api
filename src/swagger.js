@@ -1,10 +1,5 @@
-import path from 'path'
-import { fileURLToPath } from'url'
 import swaggerUI from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 const options = {
   definition: {
@@ -21,7 +16,7 @@ const options = {
       description: 'Ani-mania API'
     }
   ],
-  apis: [`${path.join(__dirname, './routes/*.js')}`]
+  apis: ['src/routes/*.js']
 }
 
 const swaggerSpec = swaggerJsDoc(options)
